@@ -29,7 +29,7 @@ class Crontab
 
     protected string $mutexPool = 'default';
 
-    protected int $mutexExpires = 3600;
+    protected int $mutexExpires = 60;
 
     protected bool $onOneServer = false;
 
@@ -46,6 +46,8 @@ class Crontab
     protected ?Channel $running = null;
 
     protected array $environments = [];
+
+    protected array $options = [];
 
     public function __clone()
     {
@@ -68,6 +70,7 @@ class Crontab
             "\x00*\x00enable" => $this->enable,
             "\x00*\x00timezone" => $this->timezone,
             "\x00*\x00environments" => $this->environments,
+            "\x00*\x00options" => $this->options,
         ];
     }
 
@@ -87,6 +90,7 @@ class Crontab
         $this->running = new Channel(1);
         $this->timezone = $data["\x00*\x00timezone"] ?? $this->timezone;
         $this->environments = $data["\x00*\x00environments"] ?? $this->environments;
+        $this->options = $data["\x00*\x00options"] ?? $this->options;
     }
 
     public function getName(): ?string
@@ -237,6 +241,17 @@ class Crontab
     public function getEnvironments(): array
     {
         return $this->environments;
+    }
+
+    public function setOptions(array $options): static
+    {
+        $this->options = $options;
+        return $this;
+    }
+
+    public function getOptions(): array
+    {
+        return $this->options;
     }
 
     public function runsInEnvironment(string $environment): bool
